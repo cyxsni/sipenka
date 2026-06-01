@@ -20,6 +20,10 @@ RUN docker-php-ext-install gd pdo pdo_mysql zip
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Fix MPM conflict - disable mpm_event, enable mpm_prefork
+RUN a2dismod mpm_event || true
+RUN a2enmod mpm_prefork
+
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
@@ -32,7 +36,7 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
-# Install dan build Vite assets
+# Install dan build Vite assets (jika ada)
 RUN npm install && npm run build
 
 # Set permissions
@@ -46,8 +50,8 @@ RUN if [ -f .env.example ]; then cp .env.example .env; fi
 RUN php artisan key:generate --force
 
 # Cache config dan routes
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
+RUN php artisan config:cache || true
+RUN php artisan route:cache || true
+RUN php artisan view:cache || true
 
 EXPOSE 80
