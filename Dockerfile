@@ -20,11 +20,13 @@ RUN docker-php-ext-install gd pdo pdo_mysql zip
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Fix MPM conflict - disable mpm_event, enable mpm_prefork
-RUN a2dismod mpm_event || true
+# ========== PERBAIKAN MPM ==========
+# Matikan semua MPM dulu, lalu nyalakan prefork
+RUN a2dismod mpm_event mpm_worker || true
 RUN a2enmod mpm_prefork
+# ===================================
 
-# Enable Apache mod_rewrite
+# Enable mod_rewrite
 RUN a2enmod rewrite
 
 # Set working directory
@@ -36,22 +38,23 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
-# Install dan build Vite assets (jika ada)
-RUN npm install && npm run build
+# Install dan build Vite assets
+RUN npm install && npm run build || true
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Copy .env.example ke .env (kalau ada)
-RUN if [ -f .env.example ]; then cp .env.example .env; fi
+# Buat .env jika belum ada
+RUN if [ ! -f .env ] && [ -f .env.example ]; then cp .env.example .env; fi
 
 # Generate APP_KEY
 RUN php artisan key:generate --force
 
-# Cache config dan routes
+# Cache config
 RUN php artisan config:cache || true
-RUN php artisan route:cache || true
-RUN php artisan view:cache || true
 
 EXPOSE 80
+
+# Start Apache dengan benar
+CMD ["apache2-foreground"]
