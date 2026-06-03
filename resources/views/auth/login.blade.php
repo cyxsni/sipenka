@@ -29,11 +29,11 @@
                 
                 <div class="space-y-6">
                     <h1 class="text-5xl font-bold leading-tight">Selamat Datang<br>di SIPENKA</h1>
-                    <p class="text-xl text-white/80 max-w-md">Sistem Penomoran Surat Keluar yang modern, efisien, dan terintegrasi.</p>
+                    <p class="text-xl text-white/80 max-w-md">Akses layanan penomoran surat keluar dengan cepat, mudah, dan terintegrasi.</p>
                 </div>
                 
                 <div class="border-l-4 border-white/30 pl-4">
-                    <p class="text-sm text-white/60 italic">"Melayani dengan Cepat, Tepat, dan Transparan"</p>
+                    <p class="text-sm text-white/60 italic">"Tertib Penomoran, Tertata Administrasi"</p>
                 </div>
             </div>
         </div>

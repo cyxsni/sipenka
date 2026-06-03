@@ -128,7 +128,7 @@
                         Selamat Datang di <span class="text-yellow-300">SIPENKA</span>
                     </h1>
                     <p class="text-base md:text-lg text-white/80 mb-6 max-w-lg fade-in-up-delay-1">
-                        Platform digital untuk mengelola nomor surat keluar di lingkungan Dinas Pendidikan Kabupaten Banyumas. Lebih cepat, transparan, dan bebas kesalahan.
+                        Sistem penomoran surat keluar yang modern dan terintegrasi untuk mendukung proses administrasi yang lebih cepat, akurat, dan tertib.
                     </p>
                     <div class="fade-in-up-delay-2">
                         @guest
@@ -146,7 +146,7 @@
                 <div class="hidden md:block fade-in-right">
                     <div class="glass-card rounded-3xl shadow-2xl p-6 border border-white/20 text-gray-900">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="font-semibold text-gray-800 text-base">📊 Statistik Sistem</span>
+                            <span class="font-semibold text-gray-800 text-base">Statistik Sistem</span>
                             <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full flex items-center gap-1">
                                 <span class="w-1.5 h-1.5 bg-green-500 rounded-full live-dot"></span> live
                             </span>

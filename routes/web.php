@@ -3,10 +3,10 @@
 use App\Http\Controllers\AdminSuratController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserSuratController;
-use App\Models\SuratKeluar;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Models\SuratKeluar;
+use App\Models\User;
 
 // Landing page
 Route::get('/', function () {
@@ -14,6 +14,7 @@ Route::get('/', function () {
         return redirect()->route('dashboard');
     }
     
+    // Data statistik dari database
     $suratDiterbitkan = SuratKeluar::where('status', 'approved')->count();
     $bidangAktif = User::where('role', 'user')->distinct('bidang')->count('bidang');
     $totalPengajuan = SuratKeluar::count();
@@ -23,10 +24,13 @@ Route::get('/', function () {
 
 // Dashboard redirect berdasarkan role
 Route::get('/dashboard', function () {
-    if (auth()->check() && auth()->user()->isAdmin()) {
-        return redirect()->route('admin.dashboard');
+    if (auth()->check()) {
+        if (auth()->user()->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect()->route('user.dashboard');
     }
-    return redirect()->route('user.dashboard');
+    return redirect()->route('login');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Profile routes (bawaan Breeze)
@@ -42,6 +46,8 @@ Route::middleware(['auth', 'verified', 'role:user'])->prefix('user')->name('user
     Route::get('/pengajuan/create', [UserSuratController::class, 'create'])->name('pengajuan.create');
     Route::post('/pengajuan', [UserSuratController::class, 'store'])->name('pengajuan.store');
     Route::get('/pengajuan/{id}', [UserSuratController::class, 'show'])->name('pengajuan.show');
+    
+    // Download dan Print Surat
     Route::get('/surat/{id}/download', [UserSuratController::class, 'download'])->name('surat.download');
     Route::get('/surat/{id}/print', [UserSuratController::class, 'print'])->name('surat.print');
 });
@@ -52,9 +58,12 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/surat/{id}', [AdminSuratController::class, 'show'])->name('surat.show');
     Route::post('/surat/{id}/approve', [AdminSuratController::class, 'approve'])->name('surat.approve');
     Route::post('/surat/{id}/reject', [AdminSuratController::class, 'reject'])->name('surat.reject');
+    Route::delete('/surat/{id}', [AdminSuratController::class, 'destroy'])->name('surat.destroy');
+    // Route untuk polling realtime
+    Route::get('/check-new', [AdminSuratController::class, 'checkNew'])->name('check-new');
 });
 
-// Logout GET (fallback untuk menghindari 419)
+// Fallback logout GET (menghindari error 405)
 Route::get('/logout', function () {
     Auth::logout();
     return redirect('/')->with('success', 'Anda telah berhasil logout. 👋');

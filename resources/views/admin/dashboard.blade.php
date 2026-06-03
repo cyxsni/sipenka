@@ -19,121 +19,110 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
             @php
-                $total = App\Models\SuratKeluar::count();
-                $pending = App\Models\SuratKeluar::where('status', 'pending')->count();
-                $approved = App\Models\SuratKeluar::where('status', 'approved')->count();
-                $rejected = App\Models\SuratKeluar::where('status', 'rejected')->count();
+                $total = \App\Models\SuratKeluar::count();
+                $pending = \App\Models\SuratKeluar::where('status', 'pending')->count();
+                $approved = \App\Models\SuratKeluar::where('status', 'approved')->count();
+                $rejected = \App\Models\SuratKeluar::where('status', 'rejected')->count();
             @endphp
 
-            <!-- STATS CARDS – 4 KOLOM, BISA DIKLIK -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
-                
+            <!-- STATS CARDS – HP: 2 kolom, Laptop: 4 kolom -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+
                 <!-- Total -->
                 <a href="{{ route('admin.dashboard', array_merge(request()->except('status'), ['status' => 'all'])) }}"
-                   class="group relative overflow-hidden rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer
+                   class="group relative overflow-hidden rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full
                           {{ $status == 'all' ? 'ring-2 ring-offset-2 ring-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200' : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100' }}">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-200/30 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                    <div class="relative p-6">
+                    <div class="relative p-5">
                         <div class="flex items-start justify-between">
                             <div>
-                                <p class="text-sm font-medium text-blue-700 mb-2">Total</p>
-                                <p class="text-5xl font-bold text-blue-800 tracking-tight">{{ $total }}</p>
-                                <p class="text-xs text-blue-600 mt-2">semua pengajuan</p>
+                                <p class="text-sm font-medium text-blue-700 mb-1">Total</p>
+                                <p class="card-total text-4xl lg:text-5xl font-bold text-blue-800 tracking-tight">{{ $total }}</p>
+                                <p class="text-xs text-blue-600 mt-1">semua pengajuan</p>
                             </div>
-                            <div class="h-14 w-14 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-sm border border-blue-200">
-                                <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="h-12 w-12 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-sm border border-blue-200">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
                             </div>
-                        </div>
-                        <div class="mt-4 h-1.5 bg-blue-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full w-full"></div>
                         </div>
                     </div>
                 </a>
 
                 <!-- Menunggu -->
                 <a href="{{ route('admin.dashboard', array_merge(request()->except('status'), ['status' => 'pending'])) }}"
-                   class="group relative overflow-hidden rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer
+                   class="group relative overflow-hidden rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full
                           {{ $status == 'pending' ? 'ring-2 ring-offset-2 ring-yellow-500 bg-gradient-to-br from-amber-50 to-yellow-50 border-yellow-200' : 'bg-gradient-to-br from-amber-50 to-yellow-50 border-yellow-100' }}">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-200/30 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                    <div class="relative p-6">
+                    <div class="relative p-5">
                         <div class="flex items-start justify-between">
                             <div>
-                                <p class="text-sm font-medium text-yellow-700 mb-2 flex items-center gap-1.5">
+                                <p class="text-sm font-medium text-yellow-700 mb-1 flex items-center gap-1.5">
                                     <span class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
                                     Menunggu
                                 </p>
-                                <p class="text-5xl font-bold text-yellow-800 tracking-tight">{{ $pending }}</p>
-                                <p class="text-xs text-yellow-600 mt-2">perlu persetujuan</p>
+                                <p class="card-pending text-4xl lg:text-5xl font-bold text-yellow-800 tracking-tight">{{ $pending }}</p>
+                                <p class="text-xs text-yellow-600 mt-1">perlu persetujuan</p>
                             </div>
-                            <div class="h-14 w-14 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-sm border border-yellow-200">
-                                <svg class="w-7 h-7 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="h-12 w-12 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-sm border border-yellow-200">
+                                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
-                        </div>
-                        <div class="mt-4 h-1.5 bg-yellow-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-yellow-500 to-amber-500 rounded-full w-full"></div>
                         </div>
                     </div>
                 </a>
 
                 <!-- Disetujui -->
                 <a href="{{ route('admin.dashboard', array_merge(request()->except('status'), ['status' => 'approved'])) }}"
-                   class="group relative overflow-hidden rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer
+                   class="group relative overflow-hidden rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full
                           {{ $status == 'approved' ? 'ring-2 ring-offset-2 ring-green-500 bg-gradient-to-br from-emerald-50 to-green-50 border-green-200' : 'bg-gradient-to-br from-emerald-50 to-green-50 border-green-100' }}">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-green-200/30 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                    <div class="relative p-6">
+                    <div class="relative p-5">
                         <div class="flex items-start justify-between">
                             <div>
-                                <p class="text-sm font-medium text-green-700 mb-2 flex items-center gap-1.5">
+                                <p class="text-sm font-medium text-green-700 mb-1 flex items-center gap-1.5">
                                     <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                     </svg>
                                     Disetujui
                                 </p>
-                                <p class="text-5xl font-bold text-green-800 tracking-tight">{{ $approved }}</p>
-                                <p class="text-xs text-green-600 mt-2">surat terbit</p>
+                                <p class="card-approved text-4xl lg:text-5xl font-bold text-green-800 tracking-tight">{{ $approved }}</p>
+                                <p class="text-xs text-green-600 mt-1">surat terbit</p>
                             </div>
-                            <div class="h-14 w-14 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-sm border border-green-200">
-                                <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="h-12 w-12 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-sm border border-green-200">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
-                        </div>
-                        <div class="mt-4 h-1.5 bg-green-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full w-full"></div>
                         </div>
                     </div>
                 </a>
 
                 <!-- Ditolak -->
                 <a href="{{ route('admin.dashboard', array_merge(request()->except('status'), ['status' => 'rejected'])) }}"
-                   class="group relative overflow-hidden rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer
+                   class="group relative overflow-hidden rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full
                           {{ $status == 'rejected' ? 'ring-2 ring-offset-2 ring-red-500 bg-gradient-to-br from-rose-50 to-red-50 border-red-200' : 'bg-gradient-to-br from-rose-50 to-red-50 border-red-100' }}">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-red-200/30 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                    <div class="relative p-6">
+                    <div class="relative p-5">
                         <div class="flex items-start justify-between">
                             <div>
-                                <p class="text-sm font-medium text-red-700 mb-2">Ditolak</p>
-                                <p class="text-5xl font-bold text-red-800 tracking-tight">{{ $rejected }}</p>
-                                <p class="text-xs text-red-600 mt-2">tidak disetujui</p>
+                                <p class="text-sm font-medium text-red-700 mb-1">Ditolak</p>
+                                <p class="card-rejected text-4xl lg:text-5xl font-bold text-red-800 tracking-tight">{{ $rejected }}</p>
+                                <p class="text-xs text-red-600 mt-1">tidak disetujui</p>
                             </div>
-                            <div class="h-14 w-14 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-sm border border-red-200">
-                                <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="h-12 w-12 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-sm border border-red-200">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
                         </div>
-                        <div class="mt-4 h-1.5 bg-red-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-red-500 to-rose-500 rounded-full w-full"></div>
-                        </div>
                     </div>
                 </a>
+
             </div>
 
             <!-- FILTER BAR -->
@@ -206,16 +195,16 @@
                         <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-gray-200/50">
                             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Filter Aktif</span>
                             @if(request('search'))
-                                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">{{ request('search') }}</span>
+                                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">🔍 {{ request('search') }}</span>
                             @endif
                             @if(request('start_date'))
-                                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">{{ \Carbon\Carbon::parse(request('start_date'))->format('d M') }}</span>
+                                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">📅 {{ \Carbon\Carbon::parse(request('start_date'))->format('d M') }}</span>
                             @endif
                             @if(request('end_date'))
                                 <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">→ {{ \Carbon\Carbon::parse(request('end_date'))->format('d M') }}</span>
                             @endif
                             @if(request('bidang'))
-                                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">{{ request('bidang') }}</span>
+                                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">🏷️ {{ request('bidang') }}</span>
                             @endif
                         </div>
                     @endif
@@ -228,53 +217,64 @@
                     <table class="w-full">
                         <thead>
                             <tr class="border-b border-gray-100">
-                                <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pengaju</th>
-                                <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tgl</th>
-                                <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Perihal</th>
-                                <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Kode</th>
-                                <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-wider"></th>
+                                <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pengaju</th>
+                                <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tgl</th>
+                                <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Perihal</th>
+                                <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Kode</th>
+                                <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                                <th class="px-4 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-wider"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
                             @forelse($surat as $s)
-                            <tr class="group hover:bg-gray-50/50 transition-all duration-200">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                            <tr data-id="{{ $s->id }}" class="group hover:bg-gray-50/50 transition-all duration-200">
+                                <td class="px-4 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm flex-shrink-0">
                                             {{ substr($s->user->name, 0, 1) }}
                                         </div>
-                                        <div>
-                                            <p class="font-medium text-gray-900 text-sm">{{ $s->user->name }}</p>
+                                        <div class="min-w-0">
+                                            <p class="font-medium text-gray-900 text-sm truncate">{{ $s->user->name }}</p>
                                             <p class="text-[10px] text-gray-500 uppercase tracking-wide">{{ $s->user->bidang ?? 'Admin' }}</p>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4"><span class="text-sm text-gray-700">{{ $s->tanggal_surat->format('d/m') }}</span></td>
-                                <td class="px-6 py-4"><span class="text-sm text-gray-800">{{ Str::limit($s->perihal, 28) }}</span></td>
-                                <td class="px-6 py-4"><code class="text-xs bg-gray-100 px-2 py-1 rounded-lg text-gray-600 font-mono">{{ $s->kode_petunjuk }}</code></td>
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-4"><span class="text-sm text-gray-700">{{ $s->tanggal_surat->format('d/m') }}</span></td>
+                                <td class="px-4 py-4"><span class="text-sm text-gray-800 line-clamp-2">{{ Str::limit($s->perihal, 25) }}</span></td>
+                                <td class="px-4 py-4"><code class="text-xs bg-gray-100 px-2 py-1 rounded-lg text-gray-600 font-mono whitespace-nowrap">{{ $s->kode_petunjuk }}</code></td>
+                                <td class="px-4 py-4">
                                     @if($s->status == 'pending')
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">
                                             <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span> Menunggu
                                         </span>
                                     @elseif($s->status == 'approved')
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">
                                             <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> {{ $s->nomor_surat }}
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200">
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200 whitespace-nowrap">
                                             <span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span> Ditolak
                                         </span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 text-right">
-                                    <a href="{{ route('admin.surat.show', $s->id) }}" class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                        Detail
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                        </svg>
-                                    </a>
+                                <td class="px-4 py-4 text-right">
+                                    <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <a href="{{ route('admin.surat.show', $s->id) }}" class="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition" title="Detail">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                        </a>
+                                        @if($s->status == 'rejected')
+                                            <button type="button" 
+                                                    onclick="confirmDelete({{ $s->id }})"
+                                                    class="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition" title="Hapus">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                            </button>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                             @empty
@@ -303,4 +303,106 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="deleteModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-md mx-4">
+            <div class="text-center">
+                <div class="h-16 w-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Yakin Hapus?</h3>
+                <p class="text-sm text-gray-500 mb-6">Data yang sudah dihapus tidak dapat dikembalikan.</p>
+                <div class="flex gap-3 justify-center">
+                    <button type="button" onclick="closeDeleteModal()"
+                            class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-medium transition">
+                        Batal
+                    </button>
+                    <form id="deleteForm" method="POST" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-medium transition">
+                            Hapus
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmDelete(id) {
+            const modal = document.getElementById('deleteModal');
+            const form = document.getElementById('deleteForm');
+            form.action = '/admin/surat/' + id;
+            modal.classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        // Tutup modal dengan klik di luar
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+    </script>
+
+    <!-- Polling realtime -->
+    <script>
+        let lastId = {{ $surat->max('id') ?? 0 }};
+
+        function checkNewSurat() {
+            fetch('{{ route('admin.check-new') }}?last_id=' + lastId + '&status={{ $status }}')
+                .then(response => response.json())
+                .then(data => {
+                    // Update angka di card
+                    if (data.counts) {
+                        const totalEl = document.querySelector('.card-total');
+                        if (totalEl) totalEl.textContent = data.counts.total;
+                        const pendingEl = document.querySelector('.card-pending');
+                        if (pendingEl) pendingEl.textContent = data.counts.pending;
+                        const approvedEl = document.querySelector('.card-approved');
+                        if (approvedEl) approvedEl.textContent = data.counts.approved;
+                        const rejectedEl = document.querySelector('.card-rejected');
+                        if (rejectedEl) rejectedEl.textContent = data.counts.rejected;
+                    }
+
+                    if (data.new_count > 0) {
+                        const tbody = document.querySelector('table tbody');
+                        const existingEmpty = tbody.querySelector('tr td[colspan]');
+                        if (existingEmpty) existingEmpty.parentElement.remove();
+                        tbody.insertAdjacentHTML('beforeend', data.html);
+
+                        const newRows = tbody.querySelectorAll('tr');
+                        if (newRows.length > 0) {
+                            const lastRow = newRows[newRows.length - 1];
+                            const newId = lastRow.getAttribute('data-id');
+                            if (newId) lastId = parseInt(newId);
+                        }
+
+                        const notif = document.createElement('div');
+                        notif.className = 'fixed bottom-6 right-6 bg-emerald-500 text-white px-4 py-3 rounded-2xl shadow-xl z-50 animate-slide-up';
+                        notif.innerHTML = '🔔 ' + data.new_count + ' pengajuan baru!';
+                        document.body.appendChild(notif);
+                        setTimeout(() => notif.remove(), 4000);
+                    }
+                });
+        }
+
+        setInterval(checkNewSurat, 5000);
+    </script>
+
+    <style>
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up {
+            animation: slide-up 0.3s ease-out;
+        }
+    </style>
 </x-app-layout>
