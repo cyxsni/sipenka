@@ -7,7 +7,7 @@
                 </div>
                 <div>
                     <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        Hai, {{ explode(' ', auth()->user()->name)[0] }}!
+                        {{ $jenis == 'surat_keputusan' ? 'Dashboard Surat Keputusan' : 'Dashboard Surat Keluar' }}
                     </h2>
                     <p class="text-sm text-gray-500 flex items-center gap-2">
                         <span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-bold border border-blue-200">
@@ -17,14 +17,17 @@
                     </p>
                 </div>
             </div>
-            <a href="{{ route('user.pengajuan.create') }}" 
+            @php
+                $createRoute = $jenis == 'surat_keputusan' ? 'user.surat-keputusan.pengajuan.create' : 'user.surat-keluar.pengajuan.create';
+            @endphp
+            <a href="{{ route($createRoute) }}" 
                class="group relative overflow-hidden bg-gray-900 hover:bg-gray-800 text-white px-5 py-3 rounded-2xl text-sm font-medium 
                       transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg shadow-gray-900/20">
                 <span class="relative z-10 flex items-center gap-2">
                     <svg class="w-4 h-4 transition-transform group-hover:rotate-90 duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
-                    Ajukan Surat
+                    Ajukan {{ $jenis == 'surat_keputusan' ? 'SK' : 'Surat' }}
                 </span>
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             </a>
@@ -41,7 +44,7 @@
                 $rejected = $surat->where('status', 'rejected')->count();
             @endphp
 
-            <!-- STATS CARDS – HP: 2 kolom, Laptop: 4 kolom -->
+            <!-- STATS CARDS -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 
                 <!-- Total -->
@@ -131,8 +134,12 @@
 
             <!-- FILTER BAR -->
             <div class="bg-white/70 backdrop-blur-xl rounded-3xl shadow-sm border border-white/50 p-5 mb-6">
-                <form method="GET" action="{{ route('user.dashboard') }}" class="space-y-4">
+                @php
+                    $filterRoute = $jenis == 'surat_keputusan' ? 'user.surat-keputusan.dashboard' : 'user.surat-keluar.dashboard';
+                @endphp
+                <form method="GET" action="{{ route($filterRoute) }}" class="space-y-4">
                     <div class="flex flex-wrap items-end gap-3">
+                        <!-- Search -->
                         <div class="flex-1 min-w-[200px]">
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Cari</label>
                             <div class="relative">
@@ -143,6 +150,7 @@
                                        class="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-sm">
                             </div>
                         </div>
+                        <!-- Start Date -->
                         <div class="flex-1 min-w-[180px]">
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Dari</label>
                             <div class="relative">
@@ -153,6 +161,7 @@
                                        class="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-sm">
                             </div>
                         </div>
+                        <!-- End Date -->
                         <div class="flex-1 min-w-[180px]">
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Sampai</label>
                             <div class="relative">
@@ -163,6 +172,7 @@
                                        class="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-sm">
                             </div>
                         </div>
+                        <!-- Buttons -->
                         <div class="flex gap-2">
                             <button type="submit" 
                                     class="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg shadow-gray-900/20 flex items-center gap-2">
@@ -172,7 +182,7 @@
                                 Filter
                             </button>
                             @if(request('start_date') || request('end_date') || request('search'))
-                                <a href="{{ route('user.dashboard') }}" class="px-4 py-3 text-gray-500 hover:text-gray-700 rounded-2xl hover:bg-gray-100 transition">
+                                <a href="{{ route($filterRoute) }}" class="px-4 py-3 text-gray-500 hover:text-gray-700 rounded-2xl hover:bg-gray-100 transition">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
@@ -207,7 +217,9 @@
                                 <tr class="border-b border-gray-100">
                                     <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tgl</th>
                                     <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Perihal</th>
+                                    @if($jenis != 'surat_keputusan')
                                     <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Kode</th>
+                                    @endif
                                     <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Nomor</th>
                                     <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Status</th>
                                     <th class="px-4 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-wider"></th>
@@ -222,9 +234,11 @@
                                     <td class="px-4 py-4">
                                         <span class="text-sm text-gray-700">{{ Str::limit($s->perihal, 30) }}</span>
                                     </td>
+                                    @if($jenis != 'surat_keputusan')
                                     <td class="px-4 py-4">
                                         <code class="text-xs bg-gray-100 px-2 py-1 rounded-lg text-gray-500">{{ $s->kode_petunjuk }}</code>
                                     </td>
+                                    @endif
                                     <td class="px-4 py-4">
                                         <span class="text-sm font-mono text-gray-600">{{ $s->nomor_surat ?? '—' }}</span>
                                     </td>
@@ -245,19 +259,27 @@
                                     </td>
                                     <td class="px-4 py-4 text-right">
                                         <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                            <a href="{{ route('user.pengajuan.show', $s->id) }}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition">
+                                            {{-- Detail link --}}
+                                            @php
+                                                $detailRoute = $jenis == 'surat_keputusan' ? 'user.surat-keputusan.pengajuan.show' : 'user.surat-keluar.pengajuan.show';
+                                            @endphp
+                                            <a href="{{ route($detailRoute, $s->id) }}" class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                                 </svg>
                                             </a>
                                             @if($s->status == 'approved')
-                                                <a href="{{ route('user.surat.print', $s->id) }}" target="_blank" class="p-2 text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition">
+                                                @php
+                                                    $printRoute = $jenis == 'surat_keputusan' ? 'user.surat-keputusan.surat.print' : 'user.surat-keluar.surat.print';
+                                                    $downloadRoute = $jenis == 'surat_keputusan' ? 'user.surat-keputusan.surat.download' : 'user.surat-keluar.surat.download';
+                                                @endphp
+                                                <a href="{{ route($printRoute, $s->id) }}" target="_blank" class="p-2 text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12H5"/>
                                                     </svg>
                                                 </a>
-                                                <a href="{{ route('user.surat.download', $s->id) }}" class="p-2 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
+                                                <a href="{{ route($downloadRoute, $s->id) }}" class="p-2 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                                     </svg>
@@ -279,13 +301,13 @@
                         </div>
                         <p class="text-gray-900 font-semibold text-lg">Belum ada pengajuan</p>
                         <p class="text-gray-500 text-sm mt-1 mb-6">Ajukan surat pertama kamu sekarang</p>
-                        <a href="{{ route('user.pengajuan.create') }}" 
+                        <a href="{{ route($createRoute) }}" 
                            class="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-5 py-3 rounded-2xl text-sm font-medium 
                                   transition-all duration-200 shadow-lg shadow-gray-900/20">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
-                            Ajukan Surat
+                            Ajukan {{ $jenis == 'surat_keputusan' ? 'SK' : 'Surat' }}
                         </a>
                     </div>
                 @endif

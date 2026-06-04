@@ -13,7 +13,10 @@
                     <p class="text-sm text-gray-500">{{ $surat->status == 'pending' ? 'Menunggu Persetujuan' : ($surat->status == 'approved' ? 'Disetujui' : 'Ditolak') }}</p>
                 </div>
             </div>
-            <a href="{{ route('user.dashboard') }}" 
+            @php
+                $backRoute = ($surat->jenis_surat ?? 'surat_keluar') == 'surat_keputusan' ? 'user.surat-keputusan.dashboard' : 'user.surat-keluar.dashboard';
+            @endphp
+            <a href="{{ route($backRoute) }}" 
                class="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -24,7 +27,7 @@
     </x-slot>
 
     <div class="py-8">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <!-- Status Alert -->
             @if($surat->status == 'approved')
@@ -74,10 +77,12 @@
                             <dt class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Perihal</dt>
                             <dd class="text-sm text-gray-900">{{ $surat->perihal }}</dd>
                         </div>
+                        @if(($surat->jenis_surat ?? 'surat_keluar') != 'surat_keputusan')
                         <div>
                             <dt class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Kode Petunjuk</dt>
                             <dd><code class="text-sm bg-gray-100 px-3 py-1 rounded-lg text-gray-700 font-mono">{{ $surat->kode_petunjuk }}</code></dd>
                         </div>
+                        @endif
                         <div>
                             <dt class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Keterangan</dt>
                             <dd><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">{{ $surat->keterangan }}</span></dd>
@@ -103,14 +108,18 @@
             <!-- Tombol Print/Download jika Approved -->
             @if($surat->status == 'approved')
                 <div class="flex gap-3">
-                    <a href="{{ route('user.surat.print', $surat->id) }}" target="_blank"
+                    @php
+                        $printRoute = ($surat->jenis_surat ?? 'surat_keluar') == 'surat_keputusan' ? 'user.surat-keputusan.surat.print' : 'user.surat-keluar.surat.print';
+                        $downloadRoute = ($surat->jenis_surat ?? 'surat_keluar') == 'surat_keputusan' ? 'user.surat-keputusan.surat.download' : 'user.surat-keluar.surat.download';
+                    @endphp
+                    <a href="{{ route($printRoute, $surat->id) }}" target="_blank"
                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 px-6 rounded-2xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12H5"/>
                         </svg>
                         Print
                     </a>
-                    <a href="{{ route('user.surat.download', $surat->id) }}"
+                    <a href="{{ route($downloadRoute, $surat->id) }}"
                        class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-4 px-6 rounded-2xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>

@@ -8,7 +8,9 @@
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-900">Dashboard Admin</h2>
+                    <h2 class="text-2xl font-bold text-gray-900">
+                        Dashboard {{ $jenis == 'surat_keputusan' ? 'Surat Keputusan (SK)' : 'Surat Keluar' }}
+                    </h2>
                     <p class="text-sm text-gray-500 flex items-center gap-1">
                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
                         Live • {{ now()->format('d M Y') }}
@@ -22,17 +24,22 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             @php
-                $total = \App\Models\SuratKeluar::count();
-                $pending = \App\Models\SuratKeluar::where('status', 'pending')->count();
-                $approved = \App\Models\SuratKeluar::where('status', 'approved')->count();
-                $rejected = \App\Models\SuratKeluar::where('status', 'rejected')->count();
+                $total = App\Models\SuratKeluar::where('jenis_surat', $jenis)->count();
+                $pending = App\Models\SuratKeluar::where('jenis_surat', $jenis)->where('status', 'pending')->count();
+                $approved = App\Models\SuratKeluar::where('jenis_surat', $jenis)->where('status', 'approved')->count();
+                $rejected = App\Models\SuratKeluar::where('jenis_surat', $jenis)->where('status', 'rejected')->count();
+
+                $routeName = $jenis == 'surat_keputusan' ? 'admin.surat-keputusan.dashboard' : 'admin.surat-keluar.dashboard';
+                $showRoute = $jenis == 'surat_keputusan' ? 'admin.surat-keputusan.surat.show' : 'admin.surat-keluar.surat.show';
+                $checkRoute = $jenis == 'surat_keputusan' ? 'admin.surat-keputusan.check-new' : 'admin.surat-keluar.check-new';
+                $deleteRoute = $jenis == 'surat_keputusan' ? 'admin.surat-keputusan.surat.destroy' : 'admin.surat-keluar.surat.destroy';
             @endphp
 
-            <!-- STATS CARDS – HP: 2 kolom, Laptop: 4 kolom -->
+            <!-- STATS CARDS -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
 
                 <!-- Total -->
-                <a href="{{ route('admin.dashboard', array_merge(request()->except('status'), ['status' => 'all'])) }}"
+                <a href="{{ route($routeName, array_merge(request()->except('status'), ['status' => 'all'])) }}"
                    class="group relative overflow-hidden rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full
                           {{ $status == 'all' ? 'ring-2 ring-offset-2 ring-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200' : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100' }}">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-200/30 rounded-full blur-2xl -mr-10 -mt-10"></div>
@@ -53,7 +60,7 @@
                 </a>
 
                 <!-- Menunggu -->
-                <a href="{{ route('admin.dashboard', array_merge(request()->except('status'), ['status' => 'pending'])) }}"
+                <a href="{{ route($routeName, array_merge(request()->except('status'), ['status' => 'pending'])) }}"
                    class="group relative overflow-hidden rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full
                           {{ $status == 'pending' ? 'ring-2 ring-offset-2 ring-yellow-500 bg-gradient-to-br from-amber-50 to-yellow-50 border-yellow-200' : 'bg-gradient-to-br from-amber-50 to-yellow-50 border-yellow-100' }}">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-200/30 rounded-full blur-2xl -mr-10 -mt-10"></div>
@@ -77,7 +84,7 @@
                 </a>
 
                 <!-- Disetujui -->
-                <a href="{{ route('admin.dashboard', array_merge(request()->except('status'), ['status' => 'approved'])) }}"
+                <a href="{{ route($routeName, array_merge(request()->except('status'), ['status' => 'approved'])) }}"
                    class="group relative overflow-hidden rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full
                           {{ $status == 'approved' ? 'ring-2 ring-offset-2 ring-green-500 bg-gradient-to-br from-emerald-50 to-green-50 border-green-200' : 'bg-gradient-to-br from-emerald-50 to-green-50 border-green-100' }}">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-green-200/30 rounded-full blur-2xl -mr-10 -mt-10"></div>
@@ -103,7 +110,7 @@
                 </a>
 
                 <!-- Ditolak -->
-                <a href="{{ route('admin.dashboard', array_merge(request()->except('status'), ['status' => 'rejected'])) }}"
+                <a href="{{ route($routeName, array_merge(request()->except('status'), ['status' => 'rejected'])) }}"
                    class="group relative overflow-hidden rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full
                           {{ $status == 'rejected' ? 'ring-2 ring-offset-2 ring-red-500 bg-gradient-to-br from-rose-50 to-red-50 border-red-200' : 'bg-gradient-to-br from-rose-50 to-red-50 border-red-100' }}">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-red-200/30 rounded-full blur-2xl -mr-10 -mt-10"></div>
@@ -122,15 +129,16 @@
                         </div>
                     </div>
                 </a>
-
             </div>
 
             <!-- FILTER BAR -->
             <div class="bg-white/70 backdrop-blur-xl rounded-3xl shadow-sm border border-white/50 p-5 mb-6">
-                <form method="GET" action="{{ route('admin.dashboard') }}" class="space-y-4">
+                <form method="GET" action="{{ route($routeName) }}" class="space-y-4">
                     <input type="hidden" name="status" value="{{ $status }}">
+                    <input type="hidden" name="jenis" value="{{ $jenis }}">
                     
                     <div class="flex flex-wrap items-end gap-3">
+                        <!-- Search -->
                         <div class="flex-1 min-w-[200px]">
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Cari</label>
                             <div class="relative">
@@ -141,6 +149,8 @@
                                        class="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-sm">
                             </div>
                         </div>
+
+                        <!-- Start Date -->
                         <div class="flex-1 min-w-[180px]">
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Dari</label>
                             <div class="relative">
@@ -151,6 +161,8 @@
                                        class="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-sm">
                             </div>
                         </div>
+
+                        <!-- End Date -->
                         <div class="flex-1 min-w-[180px]">
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Sampai</label>
                             <div class="relative">
@@ -161,6 +173,8 @@
                                        class="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-sm">
                             </div>
                         </div>
+
+                        <!-- Bidang -->
                         <div class="w-48">
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Bidang</label>
                             <select name="bidang"
@@ -170,9 +184,11 @@
                                 <option value="SD" {{ request('bidang') == 'SD' ? 'selected' : '' }}>SD</option>
                                 <option value="SMP" {{ request('bidang') == 'SMP' ? 'selected' : '' }}>SMP</option>
                                 <option value="GTK" {{ request('bidang') == 'GTK' ? 'selected' : '' }}>GTK</option>
-                                <option value="Umum" {{ request('bidang') == 'Umum' ? 'selected' : '' }}>Umum</option>
+                                <option value="Umum" {{ request('bidang') == 'Umum' ? 'selected' : '' }}>📋 Umum</option>
                             </select>
                         </div>
+
+                        <!-- Buttons -->
                         <div class="flex gap-2">
                             <button type="submit" 
                                     class="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg shadow-gray-900/20 flex items-center gap-2">
@@ -182,7 +198,7 @@
                                 Filter
                             </button>
                             @if(request('start_date') || request('end_date') || request('bidang') || request('search'))
-                                <a href="{{ route('admin.dashboard', ['status' => $status]) }}" class="px-4 py-3 text-gray-500 hover:text-gray-700 rounded-2xl hover:bg-gray-100 transition">
+                                <a href="{{ route($routeName, ['status' => $status]) }}" class="px-4 py-3 text-gray-500 hover:text-gray-700 rounded-2xl hover:bg-gray-100 transition">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
@@ -191,6 +207,7 @@
                         </div>
                     </div>
                     
+                    <!-- Active Filters -->
                     @if(request('start_date') || request('end_date') || request('bidang') || request('search'))
                         <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-gray-200/50">
                             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Filter Aktif</span>
@@ -220,7 +237,9 @@
                                 <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pengaju</th>
                                 <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tgl</th>
                                 <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Perihal</th>
+                                @if($jenis != 'surat_keputusan')
                                 <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Kode</th>
+                                @endif
                                 <th class="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider">Status</th>
                                 <th class="px-4 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-wider"></th>
                             </tr>
@@ -241,7 +260,9 @@
                                 </td>
                                 <td class="px-4 py-4"><span class="text-sm text-gray-700">{{ $s->tanggal_surat->format('d/m') }}</span></td>
                                 <td class="px-4 py-4"><span class="text-sm text-gray-800 line-clamp-2">{{ Str::limit($s->perihal, 25) }}</span></td>
+                                @if($jenis != 'surat_keputusan')
                                 <td class="px-4 py-4"><code class="text-xs bg-gray-100 px-2 py-1 rounded-lg text-gray-600 font-mono whitespace-nowrap">{{ $s->kode_petunjuk }}</code></td>
+                                @endif
                                 <td class="px-4 py-4">
                                     @if($s->status == 'pending')
                                         <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">
@@ -259,7 +280,7 @@
                                 </td>
                                 <td class="px-4 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                        <a href="{{ route('admin.surat.show', $s->id) }}" class="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition" title="Detail">
+                                        <a href="{{ route($showRoute, $s->id) }}" class="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition" title="Detail">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -279,7 +300,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-20 text-center">
+                                <td colspan="{{ $jenis == 'surat_keputusan' ? '5' : '6' }}" class="px-6 py-20 text-center">
                                     <div class="flex flex-col items-center">
                                         <div class="h-20 w-20 bg-gray-100 rounded-3xl flex items-center justify-center mb-4">
                                             <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,8 +322,6 @@
                     </div>
                 @endif
             </div>
-        </div>
-    </div>
 
     <!-- Modal Konfirmasi Hapus -->
     <div id="deleteModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm hidden">
@@ -334,32 +353,32 @@
     </div>
 
     <script>
-        function confirmDelete(id) {
-            const modal = document.getElementById('deleteModal');
-            const form = document.getElementById('deleteForm');
-            form.action = '/admin/surat/' + id;
-            modal.classList.remove('hidden');
-        }
+    function confirmDelete(id) {
+        const modal = document.getElementById('deleteModal');
+        const form = document.getElementById('deleteForm');
+        // Bangun URL manual berdasarkan jenis surat
+        let prefix = '{{ $jenis == "surat_keputusan" ? "/admin/surat-keputusan/surat" : "/admin/surat-keluar/surat" }}';
+        form.action = prefix + '/' + id;
+        modal.classList.remove('hidden');
+    }
 
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
-        }
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
 
-        // Tutup modal dengan klik di luar
-        document.getElementById('deleteModal').addEventListener('click', function(e) {
-            if (e.target === this) closeDeleteModal();
-        });
-    </script>
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+</script>
 
     <!-- Polling realtime -->
     <script>
         let lastId = {{ $surat->max('id') ?? 0 }};
 
         function checkNewSurat() {
-            fetch('{{ route('admin.check-new') }}?last_id=' + lastId + '&status={{ $status }}')
+            fetch('{{ route($checkRoute) }}?last_id=' + lastId + '&status={{ $status }}&jenis={{ $jenis }}')
                 .then(response => response.json())
                 .then(data => {
-                    // Update angka di card
                     if (data.counts) {
                         const totalEl = document.querySelector('.card-total');
                         if (totalEl) totalEl.textContent = data.counts.total;
@@ -401,8 +420,6 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-slide-up {
-            animation: slide-up 0.3s ease-out;
-        }
+        .animate-slide-up { animation: slide-up 0.3s ease-out; }
     </style>
 </x-app-layout>

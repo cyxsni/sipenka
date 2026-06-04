@@ -13,7 +13,12 @@
                     <p class="text-sm text-gray-500">{{ $surat->status == 'pending' ? 'Menunggu Persetujuan' : ($surat->status == 'approved' ? 'Disetujui' : 'Ditolak') }}</p>
                 </div>
             </div>
-            <a href="{{ route('admin.dashboard') }}" 
+            @php
+                $backRoute = ($surat->jenis_surat ?? 'surat_keluar') == 'surat_keputusan' 
+                    ? 'admin.surat-keputusan.dashboard' 
+                    : 'admin.surat-keluar.dashboard';
+            @endphp
+            <a href="{{ route($backRoute) }}" 
                class="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -24,7 +29,7 @@
     </x-slot>
 
     <div class="py-8">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <!-- Status Alert -->
             @if($surat->status == 'approved')
@@ -142,7 +147,6 @@
                                     <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-bold bg-blue-50 text-blue-700 border border-blue-200">
                                         {{ $previewNomor }}
                                     </span>
-                                    <p class="text-[10px] text-gray-400 mt-1">*estimasi, final saat approve</p>
                                 </dd>
                             </div>
                         @endif
@@ -152,8 +156,16 @@
 
             <!-- Tombol Aksi -->
             @if($surat->status == 'pending')
+                @php
+                    $approveRoute = ($surat->jenis_surat ?? 'surat_keluar') == 'surat_keputusan' 
+                        ? 'admin.surat-keputusan.surat.approve' 
+                        : 'admin.surat-keluar.surat.approve';
+                    $rejectRoute = ($surat->jenis_surat ?? 'surat_keluar') == 'surat_keputusan' 
+                        ? 'admin.surat-keputusan.surat.reject' 
+                        : 'admin.surat-keluar.surat.reject';
+                @endphp
                 <div class="flex gap-3">
-                    <form method="POST" action="{{ route('admin.surat.approve', $surat->id) }}" class="flex-1">
+                    <form method="POST" action="{{ route($approveRoute, $surat->id) }}" class="flex-1">
                         @csrf
                         <button type="submit" 
                                 class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-4 px-6 rounded-2xl 
@@ -166,7 +178,7 @@
                         </button>
                     </form>
                     
-                    <form method="POST" action="{{ route('admin.surat.reject', $surat->id) }}">
+                    <form method="POST" action="{{ route($rejectRoute, $surat->id) }}">
                         @csrf
                         <button type="submit" 
                                 class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-4 px-8 rounded-2xl 

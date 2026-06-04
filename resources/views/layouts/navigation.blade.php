@@ -13,31 +13,29 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     @if(auth()->user()->isAdmin())
-                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                Pengajuan Surat
-                            </span>
+                        {{-- Admin --}}
+                        <x-nav-link :href="route('admin.surat-keluar.dashboard')" :active="request()->routeIs('admin.surat-keluar.*')">
+                            Surat Keluar
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.surat-keputusan.dashboard')" :active="request()->routeIs('admin.surat-keputusan.*')">
+                            Surat Keputusan
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.laporan.rekapitulasi')" :active="request()->routeIs('admin.laporan.*')">
+                            Rekapitulasi
                         </x-nav-link>
                     @else
-                        <x-nav-link :href="route('user.dashboard')" :active="request()->routeIs('user.dashboard')">
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                                </svg>
-                                Dashboard
-                            </span>
+                        {{-- User --}}
+                        <!-- Dashboard Surat Keluar -->
+                        <x-nav-link :href="route('user.surat-keluar.dashboard')" :active="request()->routeIs('user.surat-keluar.*')">
+                            Surat Keluar
                         </x-nav-link>
-                        <x-nav-link :href="route('user.pengajuan.create')" :active="request()->routeIs('user.pengajuan.*')">
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                </svg>
-                                Ajukan Surat
-                            </span>
+
+                        <!-- Dashboard Surat Keputusan -->
+                        <x-nav-link :href="route('user.surat-keputusan.dashboard')" :active="request()->routeIs('user.surat-keputusan.*')">
+                            Surat Keputusan
                         </x-nav-link>
+
+                        
                     @endif
                 </div>
             </div>
@@ -103,15 +101,26 @@
     <div :class="{'block': open, 'hidden': !open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             @if(auth()->user()->isAdmin())
-                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
-                    Pengajuan Surat
+                {{-- Admin mobile --}}
+                <x-responsive-nav-link :href="route('admin.surat-keluar.dashboard')" :active="request()->routeIs('admin.surat-keluar.*')">
+                    Surat Keluar
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.surat-keputusan.dashboard')" :active="request()->routeIs('admin.surat-keputusan.*')">
+                    Surat Keputusan
                 </x-responsive-nav-link>
             @else
-                <x-responsive-nav-link :href="route('user.dashboard')" :active="request()->routeIs('user.dashboard')">
-                    Dashboard
+                {{-- User mobile --}}
+                <x-responsive-nav-link :href="route('user.surat-keluar.dashboard')" :active="request()->routeIs('user.surat-keluar.*')">
+                    Surat Keluar
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('user.pengajuan.create')" :active="request()->routeIs('user.pengajuan.*')">
-                    Ajukan Surat
+                <x-responsive-nav-link :href="route('user.surat-keputusan.dashboard')" :active="request()->routeIs('user.surat-keputusan.*')">
+                    Surat Keputusan
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('user.surat-keluar.pengajuan.create')" :active="request()->routeIs('user.surat-keluar.pengajuan.*')">
+                    Surat Keluar
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('user.surat-keputusan.pengajuan.create')" :active="request()->routeIs('user.surat-keputusan.pengajuan.*')">
+                    Ajukan Surat Keputusan
                 </x-responsive-nav-link>
             @endif
         </div>

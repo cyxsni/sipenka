@@ -3,13 +3,16 @@
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="text-2xl font-bold text-gray-900">
-                    Ajukan Nomor Surat
+                    {{ ($jenis ?? 'surat_keluar') == 'surat_keputusan' ? 'Pengajuan Nomor Surat Keputusan (SK)' : 'Ajukan Nomor Surat Keluar' }}
                 </h2>
                 <p class="text-sm text-gray-500 mt-0.5">
                     Isi form di bawah untuk mengajukan nomor surat baru
                 </p>
             </div>
-            <a href="{{ route('user.dashboard') }}" 
+            @php
+                $backRoute = ($jenis ?? 'surat_keluar') == 'surat_keputusan' ? 'user.surat-keputusan.dashboard' : 'user.surat-keluar.dashboard';
+            @endphp
+            <a href="{{ route($backRoute) }}" 
                class="text-gray-600 hover:text-gray-900 text-sm font-medium">
                 ← Kembali
             </a>
@@ -17,13 +20,28 @@
     </x-slot>
 
     <div class="py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="p-6 lg:p-8">
                     
-                    <form method="POST" action="{{ route('user.pengajuan.store') }}" class="space-y-6">
+                    @php
+                        $storeRoute = ($jenis ?? 'surat_keluar') == 'surat_keputusan' ? 'user.surat-keputusan.pengajuan.store' : 'user.surat-keluar.pengajuan.store';
+                    @endphp
+                    <form method="POST" action="{{ route($storeRoute) }}" class="space-y-6">
                         @csrf
+                        <input type="hidden" name="jenis_surat" value="{{ $jenis ?? 'surat_keluar' }}">
+
+                        {{-- Error Summary --}}
+                        @if ($errors->any())
+                            <div class="mb-4 bg-red-50 border border-red-200 rounded-xl p-4">
+                                <ul class="list-disc list-inside text-sm text-red-700">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         
                         <!-- Tujuan -->
                         <div>
@@ -78,7 +96,8 @@
                             @enderror
                         </div>
 
-                        <!-- Kode Petunjuk -->
+                        <!-- Kode Petunjuk (HANYA untuk Surat Keluar) -->
+                        @if(($jenis ?? 'surat_keluar') != 'surat_keputusan')
                         <div>
                             <label for="kode_petunjuk" class="block text-sm font-medium text-gray-700 mb-2">
                                 Kode Petunjuk
@@ -99,28 +118,29 @@
                                 <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                             @enderror
                         </div>
+                        @endif
 
                         <!-- Keterangan -->
-<div>
-    <label for="keterangan" class="block text-sm font-medium text-gray-700 mb-2">
-        Keterangan (Bidang Tujuan)
-    </label>
-    <input type="text" 
-           name="keterangan" 
-           id="keterangan"
-           value="{{ old('keterangan') }}" 
-           placeholder="Contoh: PGTK, SD, SMP"
-           class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl 
-                  focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 
-                  transition-all duration-200 text-gray-900 placeholder-gray-400">
-    @error('keterangan')
-        <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
-    @enderror
-</div>
+                        <div>
+                            <label for="keterangan" class="block text-sm font-medium text-gray-700 mb-2">
+                                Keterangan (Bidang Tujuan)
+                            </label>
+                            <input type="text" 
+                                   name="keterangan" 
+                                   id="keterangan"
+                                   value="{{ old('keterangan') }}" 
+                                   placeholder="Contoh: PGTK, SD, SMP"
+                                   class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl 
+                                          focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 
+                                          transition-all duration-200 text-gray-900 placeholder-gray-400">
+                            @error('keterangan')
+                                <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                            @enderror
+                        </div>
 
                         <!-- Submit -->
                         <div class="flex items-center justify-end space-x-3 pt-4">
-                            <a href="{{ route('user.dashboard') }}" 
+                            <a href="{{ route($backRoute) }}" 
                                class="px-5 py-2.5 text-gray-600 hover:text-gray-900 font-medium text-sm rounded-xl 
                                       hover:bg-gray-100 transition">
                                 Batal

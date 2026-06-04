@@ -17,18 +17,20 @@ class AuthenticatedSessionController extends Controller
     }
 
     public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
-        $request->session()->regenerate();
+{
+    $request->authenticate();
+    $request->session()->regenerate();
 
-        $user = Auth::user();
-        
-        if ($user->isAdmin()) {
-            return redirect()->route('admin.dashboard')->with('success', 'Selamat datang, ' . $user->name . '!');
-        }
-        
-        return redirect()->route('user.dashboard')->with('success', 'Selamat datang, ' . $user->name . '!');
+    $user = Auth::user();
+
+    if ($user->isAdmin()) {
+        return redirect()->route('admin.surat-keluar.dashboard')
+            ->with('success', 'Selamat datang, ' . $user->name . '!');
     }
+
+    return redirect()->route('user.surat-keluar.dashboard')
+        ->with('success', 'Selamat datang, ' . $user->name . '!');
+}
 
     public function destroy(Request $request): RedirectResponse
     {

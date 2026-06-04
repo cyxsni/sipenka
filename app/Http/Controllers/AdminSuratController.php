@@ -15,11 +15,28 @@ class AdminSuratController extends Controller
         $this->nomorService = $nomorService;
     }
 
-    public function index(Request $request)
+    // ==================== SURAT KELUAR ====================
+
+    public function indexKeluar(Request $request)
+    {
+        return $this->indexByType($request, 'surat_keluar');
+    }
+
+    // ==================== SURAT KEPUTUSAN ====================
+
+    public function indexKeputusan(Request $request)
+    {
+        return $this->indexByType($request, 'surat_keputusan');
+    }
+
+    // ==================== PRIVATE HELPER ====================
+
+    private function indexByType(Request $request, string $jenis)
     {
         $status = $request->query('status', 'pending');
 
-        $query = SuratKeluar::with('user');
+        $query = SuratKeluar::with('user')
+                    ->where('jenis_surat', $jenis);
 
         if ($status == 'all') {
             $query->whereIn('status', ['pending', 'approved', 'rejected']);
@@ -56,35 +73,44 @@ class AdminSuratController extends Controller
                        ->paginate(20)
                        ->appends($request->query());
 
-        $total = SuratKeluar::count();
-        $pending = SuratKeluar::where('status', 'pending')->count();
-        $approved = SuratKeluar::where('status', 'approved')->count();
-        $rejected = SuratKeluar::where('status', 'rejected')->count();
+        $total = SuratKeluar::where('jenis_surat', $jenis)->count();
+        $pending = SuratKeluar::where('jenis_surat', $jenis)->where('status', 'pending')->count();
+        $approved = SuratKeluar::where('jenis_surat', $jenis)->where('status', 'approved')->count();
+        $rejected = SuratKeluar::where('jenis_surat', $jenis)->where('status', 'rejected')->count();
 
-        return view('admin.dashboard', compact('surat', 'status', 'total', 'pending', 'approved', 'rejected'));
+        return view('admin.dashboard', compact('surat', 'status', 'total', 'pending', 'approved', 'rejected', 'jenis'));
     }
+
+    // ==================== SHOW ====================
 
     public function show($id)
     {
         $surat = SuratKeluar::with('user')->findOrFail($id);
         $previewNomor = null;
         if ($surat->status === 'pending') {
-            $previewNomor = $this->nomorService->previewNomor($surat->tanggal_surat);
+            $previewNomor = $this->nomorService->previewNomor($surat->tanggal_surat, $surat->jenis_surat);
         }
         return view('admin.show', compact('surat', 'previewNomor'));
     }
+
+    // ==================== APPROVE ====================
 
     public function approve($id)
     {
         try {
             $surat = SuratKeluar::where('status', 'pending')->findOrFail($id);
-            $nomor = $this->nomorService->generateNomorBerikutnya($surat->tanggal_surat);
+            $nomor = $this->nomorService->generateNomorBerikutnya($surat->tanggal_surat, $surat->jenis_surat);
             $surat->update([
                 'status' => 'approved',
                 'nomor_surat' => $nomor,
             ]);
+
+            $redirectRoute = ($surat->jenis_surat == 'surat_keputusan')
+                                ? 'admin.surat-keputusan.dashboard'
+                                : 'admin.surat-keluar.dashboard';
+
             return redirect()
-                ->route('admin.dashboard', ['status' => 'approved'])
+                ->route($redirectRoute, ['status' => 'approved'])
                 ->with('success', 'Surat berhasil disetujui.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -92,17 +118,24 @@ class AdminSuratController extends Controller
         }
     }
 
+    // ==================== REJECT ====================
+
     public function reject($id)
     {
         $surat = SuratKeluar::where('status', 'pending')->findOrFail($id);
         $surat->update(['status' => 'rejected']);
-        return redirect()->route('admin.dashboard', ['status' => 'rejected'])
+
+        $redirectRoute = ($surat->jenis_surat == 'surat_keputusan')
+                            ? 'admin.surat-keputusan.dashboard'
+                            : 'admin.surat-keluar.dashboard';
+
+        return redirect()
+            ->route($redirectRoute, ['status' => 'rejected'])
             ->with('success', 'Pengajuan ditolak.');
     }
 
-    /**
-     * Hapus surat yang sudah ditolak saja (mengurangi human error).
-     */
+    // ==================== DESTROY ====================
+
     public function destroy($id)
     {
         $surat = SuratKeluar::where('status', 'rejected')->findOrFail($id);
@@ -111,15 +144,16 @@ class AdminSuratController extends Controller
         return redirect()->back()->with('success', 'Surat berhasil dihapus.');
     }
 
-    /**
-     * Method untuk polling realtime.
-     */
+    // ==================== CHECK NEW (POLLING) ====================
+
     public function checkNew(Request $request)
     {
         $lastId = $request->input('last_id', 0);
         $status = $request->input('status', 'pending');
+        $jenis = $request->input('jenis', 'surat_keluar');
 
         $query = SuratKeluar::with('user')
+                    ->where('jenis_surat', $jenis)
                     ->where('id', '>', $lastId);
 
         if ($status !== 'all') {
@@ -129,10 +163,10 @@ class AdminSuratController extends Controller
         $surat = $query->orderBy('id', 'asc')->get();
         $newCount = $surat->count();
 
-        $pending = SuratKeluar::where('status', 'pending')->count();
-        $total = SuratKeluar::count();
-        $approved = SuratKeluar::where('status', 'approved')->count();
-        $rejected = SuratKeluar::where('status', 'rejected')->count();
+        $pending = SuratKeluar::where('jenis_surat', $jenis)->where('status', 'pending')->count();
+        $total = SuratKeluar::where('jenis_surat', $jenis)->count();
+        $approved = SuratKeluar::where('jenis_surat', $jenis)->where('status', 'approved')->count();
+        $rejected = SuratKeluar::where('jenis_surat', $jenis)->where('status', 'rejected')->count();
 
         $html = view('admin.partials.table-rows', compact('surat'))->render();
 
